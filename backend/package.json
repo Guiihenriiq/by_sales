@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+"scripts": {
+"dev": "TS_NODE_TRANSPILE_ONLY=1 node -r ts-node/register -r tsconfig-paths/register src/main/server.ts",
+"build": "rimraf dist && tsup src/main/server.ts --format cjs --target es2020 --dts --out-dir dist --minify",
+"start": "node dist/server.js",
+"lint": "eslint . --ext .ts",
+"test": "vitest",
+"migration:generate": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/infra/db/typeorm/data-source.ts src/infra/db/typeorm/migrations/AutoMigration",
+"migration:run": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/infra/db/typeorm/data-source.ts",
+"migration:revert": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/infra/db/typeorm/data-source.ts",
+"seed": "ts-node src/infra/db/seed.ts"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
