@@ -14,7 +14,7 @@ const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_DATABASE,
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: [Product], // GARANTA QUE ESTA LINHA ESTEJA ASSIM
+  entities: [Product], // <-- 2. VERIFIQUE SE "Product" ESTÁ DENTRO DO ARRAY
   migrations: [__dirname + '/typeorm/migrations/*.{js,ts}'],
 };
 
