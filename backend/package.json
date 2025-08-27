@@ -2,20 +2,40 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
 "scripts": {
-"dev": "TS_NODE_TRANSPILE_ONLY=1 node -r ts-node/register -r tsconfig-paths/register src/main/server.ts",
-"build": "rimraf dist && tsup src/main/server.ts --format cjs --target es2020 --dts --out-dir dist --minify",
-"start": "node dist/server.js",
-"lint": "eslint . --ext .ts",
-"test": "vitest",
-"migration:generate": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/infra/db/typeorm/data-source.ts src/infra/db/typeorm/migrations/AutoMigration",
-"migration:run": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/infra/db/typeorm/data-source.ts",
-"migration:revert": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/infra/db/typeorm/data-source.ts",
-"seed": "ts-node src/infra/db/seed.ts"
+  "dev": "tsx watch src/main/server.ts",
+  "build": "tsc",
+  "start": "node dist/main/server.js",
+  "typeorm": "tsx ./node_modules/typeorm/cli.js -d ./src/infra/database/data-source.ts",
+  "migration:create": "tsx ./node_modules/typeorm/cli.js migration:create",
+  "migration:run": "npm run typeorm -- migration:run",
+  "migration:revert": "npm run typeorm -- migration:revert"
 },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.26",
+    "zod": "^4.1.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
 }
