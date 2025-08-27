@@ -1,44 +1,52 @@
-import { randomUUID } from 'crypto';
+// src/domain/entities/product.entity.ts
 
-export type ProductProps = {
-  id?: string;
+import { randomUUID } from 'crypto';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+
+type CreateProductProps = {
   name: string;
   description: string;
   price: number;
-  createdAt?: Date;
 };
 
+@Entity('products')
 export class Product {
-  public readonly id: string;
-  public props: Required<ProductProps>;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  private constructor(props: ProductProps) {
-    this.id = props.id || randomUUID();
-    this.props = {
-      ...props,
-      id: this.id,
-      createdAt: props.createdAt || new Date(),
-    };
-  }
 
-  public static create(props: ProductProps): Product {
-    // Aqui poderiam existir regras de negócio. Ex:
+  @Column({ type: 'varchar', length: 255 })
+  name!: string;
+
+  @Column({ type: 'text' })
+  description!: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  price!: number;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt!: Date;
+
+  private constructor() { }
+
+  static create(props: CreateProductProps): Product {
+    const product = new Product();
+
     if (props.price <= 0) {
       throw new Error('Price must be greater than zero.');
     }
-    return new Product(props);
-  }
 
-  public updatePrice(newPrice: number): void {
-    if (newPrice <= 0) {
-      throw new Error('Price must be greater than zero.');
-    }
-    this.props.price = newPrice;
-  }
+    Object.assign(product, {
+      name: props.name,
+      description: props.description,
+      price: props.price,
+    });
 
-  // getters para acessar propriedades de forma segura
-  get name() { return this.props.name; }
-  get description() { return this.props.description; }
-  get price() { return this.props.price; }
-  get createdAt() { return this.props.createdAt; }
+    return product;
+  }
 }
