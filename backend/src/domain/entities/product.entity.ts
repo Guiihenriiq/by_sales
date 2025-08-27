@@ -1,6 +1,5 @@
 // src/domain/entities/product.entity.ts
 
-import { randomUUID } from 'crypto';
 import {
   Entity,
   PrimaryGeneratedColumn,

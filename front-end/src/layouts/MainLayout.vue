@@ -108,11 +108,11 @@ const searchQuery = ref('');
 
 // Lista de links do menu
 const linksList: EssentialLinkProps[] = [
-  { title: 'Dashboard', caption: 'Visão geral do sistema', icon: 'dashboard'},
-  { title: 'Vendas', caption: 'Gerenciar pedidos e faturas', icon: 'point_of_sale' },
-  { title: 'Clientes', caption: 'Lista de clientes', icon: 'people' },
-  { title: 'Relatórios', caption: 'Análises e gráficos', icon: 'bar_chart', },
-  { title: 'Configurações', caption: 'Ajustes do sistema', icon: 'settings',  }
+  { title: 'Dashboard', caption: 'Visão geral do sistema', icon: 'dashboard', to: '/dashboard'},
+  { title: 'Vendas', caption: 'Gerenciar pedidos e faturas', icon: 'point_of_sale', to: '/vendas' },
+  { title: 'Clientes', caption: 'Lista de clientes', icon: 'people', to: '/clientes' },
+  { title: 'Relatórios', caption: 'Análises e gráficos', icon: 'bar_chart', to: '/relatorios' },
+  { title: 'Configurações', caption: 'Ajustes do sistema', icon: 'settings', to: '/configuracoes' }
 ];
 
 // Controle do drawer
