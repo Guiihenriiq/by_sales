@@ -1,18 +1,19 @@
 <template>
-  <q-page class="q-pa-md">
-    <div class="text-h4 q-mb-md">Relatórios</div>
+  <q-page class="q-pa-md bg-grey-1">
+    <div class="text-h4 text-primary q-mb-md">Relatórios</div>
     
     <div class="row q-gutter-md">
       <div class="col-12 col-md-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6 q-mb-md">Vendas por Período</div>
+        <q-card class="shadow-2 hover-gradient-1">
+          <q-card-section class="bg-white">
+            <div class="text-h6 text-primary q-mb-md">Vendas por Período</div>
             <q-select
               v-model="periodo"
               :options="periodos"
               label="Selecionar período"
               outlined
               dense
+              color="primary"
             />
             <div class="q-mt-md text-center">
               <q-icon name="bar_chart" size="4rem" color="primary" />
@@ -23,17 +24,17 @@
       </div>
       
       <div class="col-12 col-md-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6 q-mb-md">Top Clientes</div>
+        <q-card class="shadow-2 hover-gradient-1">
+          <q-card-section class="bg-white">
+            <div class="text-h6 text-primary q-mb-md">Top Clientes</div>
             <q-list>
               <q-item v-for="cliente in topClientes" :key="cliente.id">
                 <q-item-section>
-                  <q-item-label>{{ cliente.nome }}</q-item-label>
+                  <q-item-label class="text-primary">{{ cliente.nome }}</q-item-label>
                   <q-item-label caption>{{ cliente.vendas }}</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                  <q-item-label>{{ cliente.valor }}</q-item-label>
+                  <q-item-label class="text-positive">{{ cliente.valor }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
