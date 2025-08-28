@@ -17,6 +17,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'sobre', component: () => import('pages/SobrePage.vue') },
       { path: 'cadastro', component: () => import('pages/CadastroPage.vue') },
       { path: 'login', component: () => import('pages/LoginPage.vue') },
+      { path: 'perfil', component: () => import('pages/PerfilPage.vue') },
       { path: 'categoria/:slug', component: () => import('pages/CategoriaPage.vue') },
     ],
   },
