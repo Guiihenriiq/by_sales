@@ -1,6 +1,25 @@
 MIT License
 
-Copyright (c) 2025 Guiihenriiq
+Copyright (c) 2025 Guilherme Henrique (Guiihenriiq)
+E-mail: henri3985@gmail.com
+GitHub: https://github.com/Guiihenriiq
+
+🛒 BY SALES - E-COMMERCE PLATFORM
+==================================
+
+Uma plataforma de e-commerce moderna construída com Vue.js, Quasar, Node.js,
+Express, TypeORM e PostgreSQL. Este projeto implementa Clean Architecture
+e Domain-Driven Design para máxima escalabilidade e manutenibilidade.
+
+FUNCIONALIDADES PRINCIPAIS:
+- Sistema completo de gestão de produtos
+- Dashboard com analytics em tempo real
+- Gestão de clientes e vendas
+- Arquitetura limpa e modular
+- Interface responsiva e moderna
+
+PERMISSÕES E LIMITAÇÕES:
+========================
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +38,35 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+CONTRIBUIÇÕES:
+==============
+
+Contribuições são bem-vindas! Por favor:
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Abra um Pull Request
+
+SUPORTE:
+========
+
+Para suporte, bugs ou sugestões:
+- Abra uma issue no GitHub: https://github.com/Guiihenriiq/by_sales/issues
+- Entre em contato: henri3985@gmail.com
+
+AGRADECIMENTOS:
+==============
+
+Este projeto utiliza as seguintes tecnologias open source:
+- Vue.js (https://vuejs.org/)
+- Quasar Framework (https://quasar.dev/)
+- Node.js (https://nodejs.org/)
+- Express.js (https://expressjs.com/)
+- TypeORM (https://typeorm.io/)
+- PostgreSQL (https://www.postgresql.org/)
+
+---
+
+Feito com ❤️ por Guilherme Henrique
+Brasil, 2025

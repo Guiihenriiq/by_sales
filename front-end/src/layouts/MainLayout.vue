@@ -108,6 +108,7 @@ const searchQuery = ref('');
 
 // Lista de links do menu
 const linksList: EssentialLinkProps[] = [
+  { title: 'Home', caption: 'Página inicial do e-commerce', icon: 'home', to: '/' },
   { title: 'Dashboard', caption: 'Visão geral do sistema', icon: 'dashboard', to: '/dashboard'},
   { title: 'Vendas', caption: 'Gerenciar pedidos e faturas', icon: 'point_of_sale', to: '/vendas' },
   { title: 'Clientes', caption: 'Lista de clientes', icon: 'people', to: '/clientes' },
@@ -123,10 +124,10 @@ function toggleLeftDrawer() {
 </script>
 
 <style lang="scss">
-/* Estilo do link ativo */
-.active-link {
-  color: white;
-  background-color: #2e1065; // cor primária Quasar
-  border-left: 4px solid #64b5f6; // detalhe secundário
+.q-drawer {
+  .q-item--active {
+    background: linear-gradient(to right, #8b5cf6, #6366f1, #3b82f6);
+    color: white;
+  }
 }
 </style>

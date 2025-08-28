@@ -4,6 +4,34 @@
     color: #f9fafb;
 }
 
+// Hover gradients
+.hover-gradient-1:hover {
+    background: linear-gradient(to right, #8b5cf6, #6366f1, #3b82f6);
+    transition: all 0.3s ease;
+}
+
+.hover-gradient-2:hover {
+    background: linear-gradient(to right, #8b5cf6, #6366f1, #3b82f6);
+    transition: all 0.3s ease;
+}
+
+.hover-gradient-3:hover {
+    background: linear-gradient(to right, #1f2937, #1d4ed8, #111827);
+    transition: all 0.3s ease;
+}
+
+// Botões com hover automático
+.q-btn:hover {
+    background: linear-gradient(to right, #8b5cf6, #6366f1, #3b82f6) !important;
+    transition: all 0.3s ease;
+}
+
+// Items do menu com hover
+.q-item:hover {
+    background: linear-gradient(to right, #8b5cf6, #6366f1, #3b82f6);
+    transition: all 0.3s ease;
+}
+
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

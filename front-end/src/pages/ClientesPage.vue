@@ -1,30 +1,33 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md bg-grey-1">
     <div class="row items-center justify-between q-mb-md">
-      <div class="text-h4">Clientes</div>
-      <q-btn color="primary" icon="add" label="Novo Cliente" />
+      <div class="text-h4 text-primary">Clientes</div>
+      <q-btn color="primary" icon="add" label="Novo Cliente" unelevated />
     </div>
-    
-    <q-card>
-      <q-card-section>
+
+    <q-card class="shadow-2">
+      <q-card-section class="bg-white">
         <q-input
           v-model="filter"
           placeholder="Buscar cliente..."
           outlined
           dense
+          color="primary"
           class="q-mb-md"
         >
           <template v-slot:append>
-            <q-icon name="search" />
+            <q-icon name="search" color="primary" />
           </template>
         </q-input>
-        
+
         <q-table
           :rows="clientes"
           :columns="columns"
           row-key="id"
           :filter="filter"
           :loading="loading"
+          color="primary"
+          class="bg-white"
         />
       </q-card-section>
     </q-card>
