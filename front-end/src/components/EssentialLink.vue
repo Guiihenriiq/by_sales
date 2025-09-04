@@ -1,5 +1,6 @@
 <template>
   <q-item
+    ref="navItem"
     clickable
     :to="to"
     exact
@@ -33,6 +34,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { gsap } from 'gsap';
+
 export interface EssentialLinkProps {
   title: string;
   caption?: string;
@@ -50,5 +54,16 @@ withDefaults(defineProps<EssentialLinkProps>(), {
   badge: '',
   badgeColor: 'primary',
   adminOnly: false,
+});
+
+const navItem = ref();
+
+onMounted(() => {
+  if (navItem.value) {
+    gsap.fromTo(navItem.value, 
+      { opacity: 0, x: -20 }, 
+      { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }
+    );
+  }
 });
 </script>

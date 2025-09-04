@@ -3,9 +3,9 @@
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
-        <h1 class="hero-title text-primary">By Sales</h1>
-        <p class="hero-subtitle">Uma nova forma de comprar</p>
-        <div class="hero-buttons">
+        <h1 ref="heroTitle" class="hero-title text-primary">By Sales</h1>
+        <p ref="heroSubtitle" class="hero-subtitle">Uma nova forma de comprar</p>
+        <div ref="heroButtons" class="hero-buttons">
           <q-btn 
             color="primary" 
             size="lg" 
@@ -34,7 +34,7 @@
       </div>
       
       <div class="row q-gutter-lg justify-center">
-        <div class="col-12 col-md-3" v-for="feature in features" :key="feature.title">
+        <div class="col-12 col-md-3 feature-item" v-for="feature in features" :key="feature.title">
           <q-card class="feature-card text-center shadow-2 hover-gradient-1">
             <q-card-section class="bg-white">
               <q-icon :name="feature.icon" size="4rem" color="primary" class="q-mb-md" />
@@ -53,7 +53,7 @@
       </div>
       
       <div class="row q-gutter-md justify-center">
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="category in categories" :key="category.name">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 category-item" v-for="category in categories" :key="category.name">
           <q-card class="category-card shadow-2 hover-gradient-1 cursor-pointer" @click="navigateToCategory(category.route)">
             <q-img :src="category.image" class="category-image" />
             <q-card-section class="text-center">
@@ -67,7 +67,7 @@
 
     <!-- CTA Section -->
     <section class="cta-section q-pa-xl">
-      <q-card class="cta-card shadow-2">
+      <q-card ref="ctaCard" class="cta-card shadow-2">
         <q-card-section class="text-center q-pa-xl bg-primary text-white">
           <h3 class="text-h4 q-mb-md">Pronto para começar?</h3>
           <p class="text-h6 q-mb-lg">Cadastre-se agora e aproveite ofertas exclusivas</p>
@@ -114,10 +114,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { gsap } from 'gsap';
 
 const router = useRouter();
+
+const heroTitle = ref();
+const heroSubtitle = ref();
+const heroButtons = ref();
+const ctaCard = ref();
 
 const features = ref([
   {
@@ -180,6 +186,46 @@ const quickActions = ref([
 function navigateToCategory(route: string) {
   router.push(route);
 }
+
+onMounted(() => {
+  const tl = gsap.timeline();
+  
+  tl.fromTo(heroTitle.value, 
+    { opacity: 0, x: -100 }, 
+    { opacity: 1, x: 0, duration: 1, ease: 'power2.out' }
+  )
+  .fromTo(heroSubtitle.value, 
+    { opacity: 0, y: 20 }, 
+    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5'
+  )
+  .fromTo(heroButtons.value, 
+    { opacity: 0, scale: 0 }, 
+    { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.3'
+  );
+  
+  setTimeout(() => {
+    gsap.fromTo('.feature-item', 
+      { opacity: 0, y: 30 }, 
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
+    );
+  }, 500);
+  
+  setTimeout(() => {
+    gsap.fromTo('.category-item', 
+      { opacity: 0, y: 30 }, 
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' }
+    );
+  }, 800);
+  
+  setTimeout(() => {
+    if (ctaCard.value) {
+      gsap.fromTo(ctaCard.value, 
+        { opacity: 0, y: 20 }, 
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
+      );
+    }
+  }, 1200);
+});
 </script>
 
 <style scoped>

@@ -1,16 +1,13 @@
 import { Router } from 'express';
-import { createProductSchema } from '../validators/create-product.validator';
-import { CreateProductController } from '../controllers/createproductController';
-import { validate } from '../middlewares/validate';
+import { ProductController } from '../controllers/productController';
+import { authMiddleware, adminMiddleware } from '../middlewares/auth';
 
 const productRoutes = Router();
+const productController = new ProductController();
 
-const createProductController = new CreateProductController();
-
-productRoutes.post(
-  '/',
-  validate(createProductSchema), // Middleware de validação
-  createProductController.handle
-);
+productRoutes.get('/', productController.findAll);
+productRoutes.get('/:id', productController.findById);
+productRoutes.get('/category/:categoryId', productController.findByCategory);
+productRoutes.post('/', authMiddleware, adminMiddleware, productController.create);
 
 export { productRoutes };

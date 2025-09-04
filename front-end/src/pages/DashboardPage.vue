@@ -1,343 +1,252 @@
 <template>
-  <q-page class="dashboard-page">
-    <div class="dashboard-container">
-      <!-- Header -->
-      <div class="dashboard-header">
-        <h1 class="dashboard-title">Painel de Controle</h1>
-        <div class="header-actions">
-          <q-btn
-            rounded
-            icon="refresh"
-            label="Atualizar"
-            class="action-btn action-btn-primary"
-            @click="fetchDashboardData"
-          />
-          <q-btn
-            rounded
-            icon="settings"
-            label="Configurações"
-            class="action-btn action-btn-secondary"
-          />
-        </div>
-      </div>
+  <q-page class="q-pa-lg">
+    <div class="dashboard-header q-mb-xl">
+      <h1 class="text-h3 text-weight-bold text-primary q-mb-md">
+        📊 Dashboard
+      </h1>
+      <p class="text-subtitle1 text-grey-7">
+        Visão geral do seu e-commerce
+      </p>
+    </div>
 
-      <!-- Dashboard Cards -->
-      <div class="cards-grid">
-        <q-card
-          v-for="card in dashboardCards"
-          :key="card.title"
-          class="card-item"
-        >
-          <q-card-section class="card-content">
-            <div class="card-header">
-              <q-icon :name="card.icon" :class="`card-icon text-${card.color}-500`" />
-              <q-badge
-                :color="card.badgeColor"
-                class="card-badge"
-                v-if="card.trend"
-              >
-                {{ card.trend }}
-              </q-badge>
+    <!-- Cards de Estatísticas -->
+    <div class="row q-gutter-lg q-mb-xl">
+      <div class="col-12 col-md-3">
+        <q-card class="stats-card bg-gradient-primary">
+          <q-card-section class="text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-h4 text-weight-bold">1,234</div>
+                <div class="text-subtitle2">Total de Produtos</div>
+              </div>
+              <q-icon name="inventory" size="48px" class="opacity-70" />
             </div>
-            <div class="card-body">
-              <div class="card-title">{{ card.title }}</div>
-              <div :class="`card-value text-${card.color}-600`">{{ card.value }}</div>
-            </div>
-            <q-linear-progress
-              :value="card.progress"
-              :color="card.color"
-              class="card-progress"
-              rounded
-            />
           </q-card-section>
         </q-card>
       </div>
 
-      <!-- Chart and Activity Section -->
-      <div class="charts-grid">
-        <q-card class="chart-card">
-          <h2 class="chart-title">Vendas Semanais</h2>
-          <canvas ref="salesChart" class="chart-canvas"></canvas>
-        </q-card>
-        <q-card class="activity-card">
-          <h2 class="chart-title">Atividade Recente</h2>
-          <q-timeline>
-            <q-timeline-entry
-              v-for="(activity, index) in recentActivities"
-              :key="index"
-              :title="activity.title"
-              :subtitle="activity.time"
-              :icon="activity.icon"
-              :color="activity.color"
-              class="timeline-entry"
-            >
-              {{ activity.description }}
-            </q-timeline-entry>
-          </q-timeline>
+      <div class="col-12 col-md-3">
+        <q-card class="stats-card bg-gradient-success">
+          <q-card-section class="text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-h4 text-weight-bold">567</div>
+                <div class="text-subtitle2">Pedidos Hoje</div>
+              </div>
+              <q-icon name="shopping_cart" size="48px" class="opacity-70" />
+            </div>
+          </q-card-section>
         </q-card>
       </div>
+
+      <div class="col-12 col-md-3">
+        <q-card class="stats-card bg-gradient-warning">
+          <q-card-section class="text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-h4 text-weight-bold">89</div>
+                <div class="text-subtitle2">Clientes Novos</div>
+              </div>
+              <q-icon name="people" size="48px" class="opacity-70" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <q-card class="stats-card bg-gradient-info">
+          <q-card-section class="text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-h4 text-weight-bold">R$ 45.2k</div>
+                <div class="text-subtitle2">Receita Hoje</div>
+              </div>
+              <q-icon name="attach_money" size="48px" class="opacity-70" />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row q-gutter-lg">
+      <div class="col-12 col-md-8">
+        <q-card class="chart-card">
+          <q-card-section>
+            <div class="text-h6 text-weight-bold q-mb-md">
+              📈 Vendas dos Últimos 7 Dias
+            </div>
+            <div class="chart-container">
+              <canvas ref="salesChart"></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <q-card class="chart-card">
+          <q-card-section>
+            <div class="text-h6 text-weight-bold q-mb-md">
+              🏷️ Produtos por Categoria
+            </div>
+            <div class="chart-container">
+              <canvas ref="categoryChart"></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Pedidos Recentes -->
+    <div class="q-mt-xl">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6 text-weight-bold q-mb-md">
+            🛍️ Pedidos Recentes
+          </div>
+          <q-table
+            :rows="recentOrders"
+            :columns="orderColumns"
+            row-key="id"
+            flat
+            bordered
+          >
+            <template v-slot:body-cell-status="props">
+              <q-td :props="props">
+                <q-badge
+                  :color="getStatusColor(props.value)"
+                  :label="props.value"
+                />
+              </q-td>
+            </template>
+          </q-table>
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useQuasar } from 'quasar';
-import Chart from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
 
-// Quasar instance
-const $q = useQuasar();
+Chart.register(...registerables);
 
-// Dashboard card data
-const dashboardCards = ref([
+const salesChart = ref<HTMLCanvasElement>();
+const categoryChart = ref<HTMLCanvasElement>();
+
+const recentOrders = ref([
   {
-    title: 'Vendas Hoje',
-    value: 'R$ 12.450',
-    icon: 'point_of_sale',
-    color: 'primary',
-    badgeColor: 'positive',
-    trend: '+8%',
-    progress: 0.75,
+    id: '001',
+    customer: 'João Silva',
+    total: 'R$ 299,90',
+    status: 'Entregue',
+    date: '2024-01-15'
   },
   {
-    title: 'Clientes',
-    value: '1.234',
-    icon: 'people',
-    color: 'secondary',
-    badgeColor: 'info',
-    trend: '+12%',
-    progress: 0.62,
+    id: '002',
+    customer: 'Maria Santos',
+    total: 'R$ 159,90',
+    status: 'Processando',
+    date: '2024-01-15'
   },
   {
-    title: 'Pedidos',
-    value: '89',
-    icon: 'shopping_cart',
-    color: 'warning',
-    badgeColor: 'warning',
-    trend: '-3%',
-    progress: 0.45,
-  },
-  {
-    title: 'Crescimento',
-    value: '+15%',
-    icon: 'trending_up',
-    color: 'positive',
-    badgeColor: 'positive',
-    trend: '+5%',
-    progress: 0.88,
-  },
+    id: '003',
+    customer: 'Pedro Costa',
+    total: 'R$ 89,90',
+    status: 'Pendente',
+    date: '2024-01-14'
+  }
 ]);
 
-// Recent activities
-const recentActivities = ref([
-  {
-    title: 'Nova Venda',
-    time: 'Hoje, 14:30',
-    description: 'Venda de R$ 2.500 registrada para cliente João Silva.',
-    icon: 'point_of_sale',
-    color: 'primary',
-  },
-  {
-    title: 'Novo Cliente',
-    time: 'Hoje, 12:15',
-    description: 'Maria Oliveira cadastrada no sistema.',
-    icon: 'person_add',
-    color: 'secondary',
-  },
-  {
-    title: 'Atualização de Pedido',
-    time: 'Ontem, 09:45',
-    description: 'Pedido #1234 atualizado para enviado.',
-    icon: 'shopping_cart',
-    color: 'warning',
-  },
-]);
+const orderColumns = [
+  { name: 'id', label: 'ID', field: 'id', align: 'left' },
+  { name: 'customer', label: 'Cliente', field: 'customer', align: 'left' },
+  { name: 'total', label: 'Total', field: 'total', align: 'left' },
+  { name: 'status', label: 'Status', field: 'status', align: 'center' },
+  { name: 'date', label: 'Data', field: 'date', align: 'left' }
+];
 
-// Chart reference
-const salesChart = ref<HTMLCanvasElement | null>(null);
-
-// Fetch dashboard data (mock API call)
-const fetchDashboardData = async () => {
-  $q.notify({
-    message: 'Dados do painel atualizados!',
-    color: 'positive',
-    position: 'top',
-  });
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Entregue': return 'positive';
+    case 'Processando': return 'warning';
+    case 'Pendente': return 'negative';
+    default: return 'grey';
+  }
 };
 
-// Initialize chart
 onMounted(() => {
+  // Gráfico de Vendas
   if (salesChart.value) {
-    try {
-      new Chart(salesChart.value, {
-        type: 'line',
-        data: {
-          labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-          datasets: [
-            {
-              label: 'Vendas (R$)',
-              data: [5000, 7000, 4500, 9000, 12000, 8000, 6000],
-              borderColor: '#4F46E5',
-              backgroundColor: 'rgba(79, 70, 229, 0.2)',
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      console.error('Failed to initialize chart:', error);
-      $q.notify({
-        message: 'Erro ao carregar o gráfico de vendas.',
-        color: 'negative',
-        position: 'top',
-      });
-    }
+    new Chart(salesChart.value, {
+      type: 'line',
+      data: {
+        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+        datasets: [{
+          label: 'Vendas (R$)',
+          data: [1200, 1900, 3000, 5000, 2000, 3000, 4500],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+
+  // Gráfico de Categorias
+  if (categoryChart.value) {
+    new Chart(categoryChart.value, {
+      type: 'doughnut',
+      data: {
+        labels: ['Eletrônicos', 'Roupas', 'Casa', 'Esportes'],
+        datasets: [{
+          data: [30, 25, 20, 25],
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
   }
 });
 </script>
 
 <style scoped>
-/* --- Variáveis Globais (Tema) --- */
-.dashboard-page {
-  --primary-color: #4f46e5;      /* indigo-600 */
-  --primary-color-hover: #4338ca; /* indigo-700 */
-  --secondary-color: #4b5563;   /* gray-600 */
-  --text-color-primary: #1f2937;  /* gray-800 */
-  --text-color-secondary: #6b7281;/* gray-500 */
-  --bg-color: #f8fafc;           /* slate-50 */
-  --card-bg-color: #ffffff;
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --border-radius: 1rem; /* 16px */
-  --transition-speed: 0.3s;
+.stats-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Estilos de Base --- */
-.dashboard-page {
-  background-color: var(--bg-color);
-  padding: clamp(1rem, 4vw, 2rem); /* Padding responsivo */
+.chart-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-container {
-  max-width: 1280px; /* Equivalente a max-w-7xl */
-  margin-inline: auto;
+.chart-container {
+  height: 300px;
+  position: relative;
 }
 
-/* --- Cabeçalho --- */
-.dashboard-header {
-  display: flex;
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas pequenas */
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 
-.dashboard-title {
-  font-size: clamp(1.875rem, 4vw, 2.25rem); /* Tamanho de fonte responsivo */
-  font-weight: 800; /* extabold */
-  color: var(--primary-color);
-  letter-spacing: -0.025em; /* tracking-tight */
+.bg-gradient-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-.header-actions {
-  display: flex;
-  gap: 0.75rem;
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
 
-/* --- Estilos dos Botões --- */
-.action-btn {
-  transition: all var(--transition-speed) ease;
-}
-.action-btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-
-/* --- Grid de Cards --- */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-}
-
-.card-item {
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
-  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-  overflow: hidden; /* Garante que elementos internos respeitem o border-radius */
-}
-.card-item:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--card-shadow-hover);
-}
-
-.card-content {
-  padding: 1.5rem;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.card-icon {
-  font-size: 2.25rem;
-}
-
-.card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color-secondary);
-  margin-top: 1rem;
-}
-
-.card-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-top: 0.25rem;
-}
-
-.card-progress {
-  margin-top: 1rem;
-  height: 0.5rem;
-}
-
-/* --- Grid de Gráficos e Atividades --- */
-.charts-grid {
-  margin-top: 2.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.chart-card, .activity-card {
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
-  padding: 1.5rem;
-}
-
-.chart-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-color-primary);
-  margin-bottom: 1rem;
-}
-
-.chart-canvas {
-  width: 100%;
-  height: 250px;
+.bg-gradient-info {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
 }
 </style>

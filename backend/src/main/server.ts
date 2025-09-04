@@ -2,26 +2,24 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import 'express-async-errors';
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import { AppDataSource } from '@/infra/database/data-source';
 import { routes } from './routes';
-import { AppError } from '@/application/mappers/AppError';
 
 const app = express();
 const port = process.env.PORT || 3333;
 
+app.use(cors({
+  origin: ['http://localhost:9000', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
-app.use('/api', routes); // Prefixo para todas as rotas da API
+app.use('/uploads', express.static('uploads'));
+app.use('/api', routes);
 
 // Middleware de tratamento de erros global
 app.use(
   (err: Error, request: Request, response: Response, next: NextFunction) => {
-    if (err instanceof AppError) {
-      return response.status(err.statusCode).json({
-        status: 'error',
-        message: err.message,
-      });
-    }
-
     console.error(err);
 
     return response.status(500).json({

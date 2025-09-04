@@ -1,34 +1,30 @@
 import { Product } from '@/domain/entities/product.entity';
 import { IProductRepository } from '@/domain/repositories/IProductRepository';
-import { AppError } from '../mappers/AppError';
 
 export type CreateProductInput = {
   name: string;
   description: string;
   price: number;
+  categoryId?: string;
+  stockQuantity?: number;
+  images?: string[];
+  isActive?: boolean;
 };
-
-// O retorno pode ser void ou a entidade criada, dependendo da sua necessidade
-type CreateProductOutput = Product;
 
 export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
-  async execute(input: CreateProductInput): Promise<CreateProductOutput> {
-    const productAlreadyExists = await this.productRepository.findByName(input.name);
-
-    if (productAlreadyExists) {
-      throw new AppError('Product with this name already exists.');
-    }
-
+  async execute(input: CreateProductInput): Promise<Product> {
     const product = Product.create({
       name: input.name,
       description: input.description,
       price: input.price,
+      categoryId: input.categoryId,
+      stockQuantity: input.stockQuantity,
+      images: input.images,
+      isActive: input.isActive,
     });
 
-    await this.productRepository.create(product);
-
-    return product;
+    return await this.productRepository.create(product);
   }
 }

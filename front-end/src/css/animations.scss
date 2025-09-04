@@ -1,0 +1,180 @@
+// Animações GSAP customizadas
+.gsap-fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.gsap-slide-left {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+.gsap-slide-right {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.gsap-scale-in {
+  opacity: 0;
+  transform: scale(0);
+}
+
+// Hover effects com GSAP
+.gsap-hover-scale {
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.gsap-hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Loading animations
+.gsap-pulse {
+  animation: gsap-pulse 2s infinite;
+}
+
+@keyframes gsap-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Stagger animations
+.gsap-stagger-item {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+// Page transitions
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.5s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+// Button animations
+.gsap-btn-bounce {
+  transition: transform 0.2s ease;
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Card animations
+.gsap-card-flip {
+  perspective: 1000px;
+  
+  .card-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    
+    &.flipped {
+      transform: rotateY(180deg);
+    }
+  }
+}
+
+// Text animations
+.gsap-text-reveal {
+  overflow: hidden;
+  
+  .text-line {
+    transform: translateY(100%);
+    display: inline-block;
+  }
+}
+
+// Loading spinner
+.gsap-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #5b21b6;
+  border-radius: 50%;
+  animation: gsap-spin 1s linear infinite;
+}
+
+@keyframes gsap-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Floating elements
+.gsap-float {
+  animation: gsap-float 3s ease-in-out infinite;
+}
+
+@keyframes gsap-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Gradient animations
+.gsap-gradient-shift {
+  background: linear-gradient(-45deg, #5b21b6, #818cf8, #5b21b6, #818cf8);
+  background-size: 400% 400%;
+  animation: gsap-gradient 4s ease infinite;
+}
+
+@keyframes gsap-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Responsive animations
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// Dark mode animations
+@media (prefers-color-scheme: dark) {
+  .gsap-hover-lift:hover {
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  }
+}
