@@ -1,11 +1,11 @@
 <template>
   <q-page class="q-pa-md bg-grey-1">
-    <div class="row items-center justify-between q-mb-md">
+    <div ref="pageHeader" class="row items-center justify-between q-mb-md">
       <div class="text-h4 text-primary">Vendas</div>
       <q-btn color="primary" icon="add" label="Nova Venda" unelevated />
     </div>
     
-    <q-card class="shadow-2">
+    <q-card ref="salesCard" class="shadow-2">
       <q-card-section class="bg-white">
         <q-table
           :rows="vendas"
@@ -27,9 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { gsap } from 'gsap';
 
 const loading = ref(false);
+const pageHeader = ref();
+const salesCard = ref();
 
 const columns = [
   { name: 'id', label: 'ID', field: 'id', align: 'left' },
@@ -48,4 +51,17 @@ const vendas = ref([
 function getStatusColor(status: string) {
   return status === 'Concluída' ? 'positive' : 'warning';
 }
+
+onMounted(() => {
+  const tl = gsap.timeline();
+  
+  tl.fromTo(pageHeader.value, 
+    { opacity: 0, x: -100 }, 
+    { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }
+  )
+  .fromTo(salesCard.value, 
+    { opacity: 0, y: 20 }, 
+    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4'
+  );
+});
 </script>
