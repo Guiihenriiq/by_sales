@@ -28,11 +28,23 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin_token');
+    const userData = localStorage.getItem('admin_user');
     
-    if (to.meta.requiresAuth && !token) {
+    let isAuthenticated = false;
+    if (token && userData) {
+      try {
+        const user = JSON.parse(userData);
+        isAuthenticated = user.role === 'admin';
+      } catch (error) {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_user');
+      }
+    }
+    
+    if (to.meta.requiresAuth && !isAuthenticated) {
       next('/login');
-    } else if (to.path === '/login' && token) {
+    } else if (to.meta.requiresGuest && isAuthenticated) {
       next('/dashboard');
     } else {
       next();

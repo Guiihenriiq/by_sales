@@ -3,17 +3,40 @@ import 'reflect-metadata';
 import 'express-async-errors';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { AppDataSource } from '@/infra/database/data-source';
 import { routes } from './routes';
+import { sanitizeInput } from '@/http/middlewares/sanitizer';
+import { generalRateLimiter } from '@/http/middlewares/rateLimiter';
 
 const app = express();
 const port = process.env.PORT || 3333;
 
-app.use(cors({
-  origin: ['http://localhost:9000', 'http://localhost:3000'],
-  credentials: true
+// Security middlewares
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
 }));
-app.use(express.json());
+
+// Rate limiter apenas para rotas específicas, não global
+// app.use(generalRateLimiter);
+
+app.use(cors({
+  origin: ['http://localhost:9000', 'http://localhost:3000', 'http://localhost:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(sanitizeInput);
 app.use('/uploads', express.static('uploads'));
 app.use('/api', routes);
 

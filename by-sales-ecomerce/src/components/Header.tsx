@@ -120,6 +120,11 @@ const Header: React.FC = () => {
                   <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Meus Pedidos
                   </Link>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin/sales" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Painel de Vendas
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

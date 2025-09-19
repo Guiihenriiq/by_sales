@@ -27,6 +27,16 @@ export class LoginUseCase {
       throw new Error('Invalid credentials');
     }
 
+    // Verificar se o usuário está banido
+    if (user.banned === true) {
+      throw new Error('Your account has been suspended. Please contact support.');
+    }
+
+    // Verificação de email opcional - só bloqueia se N8N estiver configurado
+    if (!user.emailVerified && process.env.N8N_WEBHOOK_URL) {
+      throw new Error('Please verify your email before logging in');
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {

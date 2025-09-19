@@ -47,6 +47,17 @@ export class UsersTable1756253003151 implements MigrationInterface {
                         isNullable: true
                     },
                     {
+                        name: "email_verified",
+                        type: "boolean",
+                        default: false
+                    },
+                    {
+                        name: "email_verification_token",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true
+                    },
+                    {
                         name: "created_at",
                         type: "timestamp",
                         default: "now()"

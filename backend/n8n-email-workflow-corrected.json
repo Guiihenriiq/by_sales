@@ -1,0 +1,69 @@
+{
+  "name": "Email Verification Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "email-verification",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-node",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@bysales.com",
+        "toEmail": "={{$json.email}}",
+        "subject": "🛒 Confirme seu email - By Sales",
+        "emailType": "html",
+        "message": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Confirme seu email</title></head><body style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\"><div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;\"><h1 style=\"color: white; margin: 0;\">🛒 By Sales</h1><p style=\"color: white; margin: 10px 0 0 0;\">E-commerce Platform</p></div><div style=\"background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);\"><h2 style=\"color: #333; margin-top: 0;\">Olá, {{$json.name}}!</h2><p style=\"color: #666; line-height: 1.6;\">Obrigado por se cadastrar na By Sales! Para completar seu cadastro, clique no botão abaixo:</p><div style=\"text-align: center; margin: 30px 0;\"><a href=\"{{$json.verificationLink}}\" style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;\">✅ Confirmar Email</a></div><p style=\"color: #999; font-size: 14px;\">Link: {{$json.verificationLink}}</p><hr style=\"border: none; border-top: 1px solid #eee; margin: 30px 0;\"><p style=\"color: #999; font-size: 12px; text-align: center;\">By Sales - E-commerce Platform</p></div></body></html>"
+      },
+      "id": "send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true, \"message\": \"Email sent successfully\" }"
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

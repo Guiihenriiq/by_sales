@@ -22,13 +22,20 @@ export class UserTypeOrmRepository implements IUserRepository {
     return await this.repository.findOne({ where: { email } });
   }
 
+  async findByVerificationToken(token: string): Promise<User | null> {
+    return await this.repository.findOne({ where: { emailVerificationToken: token } });
+  }
+
   async findAll(): Promise<User[]> {
     return await this.repository.find();
   }
 
-  async update(id: string, userData: Partial<User>): Promise<User | null> {
-    await this.repository.update(id, userData);
-    return await this.findById(id);
+  async update(user: User): Promise<User> {
+    return await this.repository.save(user);
+  }
+
+  async save(user: User): Promise<User> {
+    return await this.repository.save(user);
   }
 
   async delete(id: string): Promise<void> {
