@@ -32,6 +32,12 @@
       ],
       "@/main/*": [
         "src/main/*"
+      ],
+      "@/services/*": [
+        "src/services/*"
+      ],
+      "@/http/*": [
+        "src/http/*"
       ]
     }
   },

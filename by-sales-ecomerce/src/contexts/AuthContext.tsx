@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import toast from 'react-hot-toast';
 import axios from 'axios';
 
 interface User {
@@ -6,27 +7,63 @@ interface User {
   name: string;
   email: string;
   role: string;
+  token?: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: any) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const api = axios.create({
-  baseURL: 'http://localhost:3333/api',
+  baseURL: 'http://localhost:3334/api',
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initAuth = () => {
+      try {
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
+        if (storedToken && storedUser) {
+          const userData = JSON.parse(storedUser);
+          const userWithToken = { ...userData, token: storedToken };
+          
+          setUser(userWithToken);
+          setToken(storedToken);
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        toast.error('Erro ao acessar dados salvos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -35,32 +72,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [token]);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { user: userData, token: userToken } = response.data;
 
-      setUser(userData);
+      const userWithToken = { ...userData, token: userToken };
+      setUser(userWithToken);
       setToken(userToken);
       setIsAuthenticated(true);
 
       localStorage.setItem('token', userToken);
+      localStorage.setItem('user', JSON.stringify(userData));
       api.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-
-      return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
+      
+      toast.success(`Bem-vindo, ${userData.name}!`);
+      return { success: true };
+    } catch (error: any) {
+      const message = error.response?.data?.error || 'Login failed';
+      return { success: false, message };
     }
   };
 
-  const register = async (userData: any): Promise<boolean> => {
+  const register = async (userData: RegisterData): Promise<{ success: boolean; message?: string }> => {
     try {
-      await api.post('/auth/register', userData);
-      return true;
-    } catch (error) {
-      console.error('Register error:', error);
-      return false;
+      const response = await api.post('/auth/register', userData);
+      return { success: true, message: response.data.message };
+    } catch (error: any) {
+      const message = error.response?.data?.error || 'Registration failed';
+      return { success: false, message };
     }
   };
 
@@ -69,7 +109,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     setIsAuthenticated(false);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     delete api.defaults.headers.common['Authorization'];
+    toast.success('Logout realizado com sucesso');
   };
 
   return (
@@ -79,7 +121,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       login,
       register,
       logout,
-      isAuthenticated
+      isAuthenticated,
+      loading
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 
 const Register: React.FC = () => {
@@ -12,37 +12,47 @@ const Register: React.FC = () => {
     phone: '',
     address: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('As senhas não coincidem');
+      toast.error('As senhas não coincidem');
       setLoading(false);
       return;
     }
 
-    const success = await register(formData);
+    if (formData.password.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
+    const { confirmPassword, ...registerData } = formData;
+    const result = await register(registerData);
     
-    if (success) {
-      navigate('/login');
+    if (result.success) {
+      toast.success(result.message || 'Conta criada com sucesso! Verifique seu email.');
+      setTimeout(() => navigate('/login'), 3000);
     } else {
-      setError('Erro ao criar conta. Tente novamente.');
+      toast.error(result.message || 'Erro ao criar conta. Tente novamente.');
     }
     
     setLoading(false);
@@ -68,9 +78,15 @@ const Register: React.FC = () => {
               </div>
             )}
 
+            {success && (
+              <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+                {success}
+              </div>
+            )}
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nome Completo
+                Nome Completo *
               </label>
               <input
                 id="name"
@@ -86,7 +102,7 @@ const Register: React.FC = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                Email *
               </label>
               <input
                 id="email"
@@ -101,37 +117,54 @@ const Register: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Senha
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Telefone
               </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Sua senha"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                placeholder="(11) 99999-9999"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                Endereço
+              </label>
+              <textarea
+                id="address"
+                name="address"
+                rows={3}
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                placeholder="Seu endereço completo"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Senha *
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                placeholder="Mínimo 6 caracteres"
+              />
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirmar Senha
+                Confirmar Senha *
               </label>
               <input
                 id="confirmPassword"

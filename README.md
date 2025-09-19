@@ -136,12 +136,12 @@ npm run dev
 
 ```
 by_sales/
-├── 🖥️ front-end/                 # Aplicação Vue.js + Quasar
+├── 🖥️ by-sales-ecomerce/        # Aplicação React + TypeScript
 │   ├── 📄 src/
 │   │   ├── 🎨 components/        # Componentes reutilizáveis
 │   │   ├── 📱 pages/             # Páginas da aplicação
-│   │   ├── 🛣️ router/            # Configuração de rotas
-│   │   └── 🎯 layouts/           # Layouts base
+│   │   ├── 🔄 contexts/          # Context API (Auth, Cart)
+│   │   └── 🎯 App.tsx            # Componente principal
 │   └── 📦 package.json
 │
 ├── ⚙️ backend/                   # API Node.js + Express
@@ -151,8 +151,10 @@ by_sales/
 │   │   ├── 🌐 http/              # Controllers e rotas
 │   │   ├── 🗄️ infra/             # Banco de dados e infraestrutura
 │   │   └── 🚀 main/              # Configuração do servidor
-│   └── 📦 package.json
+│   ├── 📦 package.json
+│   └── 📖 README.md              # Documentação técnica do backend
 │
+├── 📊 DATABASE.md                # Documentação completa do banco de dados
 ├── 📜 LICENSE                    # Licença MIT
 └── 📖 README.md                  # Este arquivo
 ```
@@ -184,6 +186,25 @@ by_sales/
 - 💰 Processamento de pagamentos
 - 📦 Controle de estoque
 - 🚚 Gestão de entregas
+
+---
+
+## 📊 Documentação Técnica
+
+### 📊 **Banco de Dados**
+📖 **[DATABASE.md](DATABASE.md)** - Documentação completa do banco de dados
+- Estrutura de todas as tabelas
+- Relacionamentos e foreign keys
+- Índices e otimizações
+- Histórico de migrations
+- Comandos de backup e manutenção
+
+### ⚙️ **Backend API**
+📖 **[backend/README.md](backend/README.md)** - Documentação da API
+- Arquitetura Clean Architecture
+- Endpoints e autenticação
+- Configuração e deploy
+- Segurança e performance
 
 ---
 

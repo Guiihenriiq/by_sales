@@ -9,6 +9,7 @@ cartRoutes.use(authMiddleware);
 
 cartRoutes.get('/', cartController.getCart);
 cartRoutes.post('/', cartController.addToCart);
+cartRoutes.put('/:id', cartController.updateQuantity);
 cartRoutes.delete('/:id', cartController.removeFromCart);
 
 export { cartRoutes };

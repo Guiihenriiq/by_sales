@@ -40,4 +40,15 @@ export class CartTypeOrmRepository implements ICartRepository {
   async deleteByUserId(userId: string): Promise<void> {
     await this.repository.delete({ userId });
   }
+
+  async findById(id: string): Promise<Cart | null> {
+    return await this.repository.findOne({ 
+      where: { id },
+      relations: ['product']
+    });
+  }
+
+  async save(cart: Cart): Promise<Cart> {
+    return await this.repository.save(cart);
+  }
 }
