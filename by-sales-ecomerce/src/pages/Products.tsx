@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,6 +7,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
+import WishlistButton from '../components/WishlistButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +20,14 @@ interface Product {
   stockQuantity: number;
   isActive: boolean;
   categoryId?: string;
+  minStock?: number;
+  maxStock?: number;
+  costPrice?: number | string;
+  supplier?: string;
+  barcode?: string;
+  location?: string;
+  lastInventoryDate?: string;
+  inventoryNotes?: string;
 }
 
 interface Category {
@@ -103,11 +113,11 @@ const Products: React.FC = () => {
       if (cachedCategories) {
         categoriesPromise = Promise.resolve({ json: () => JSON.parse(cachedCategories) });
       } else {
-        categoriesPromise = fetch('http://localhost:3334/api/categories');
+        categoriesPromise = fetch(`${API_BASE_URL}/categories`);
       }
       
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch('http://localhost:3334/api/products'),
+        fetch(`${API_BASE_URL}/products`),
         categoriesPromise
       ]);
       
@@ -344,13 +354,18 @@ const Products: React.FC = () => {
                   </div>
                 )}
                 
+                {/* Wishlist Button */}
+                <div className="absolute top-2 left-2">
+                  <WishlistButton productId={product.id} size="md" />
+                </div>
+
                 {/* Stock Badge */}
                 <div className="absolute top-2 right-2">
                   {product.stockQuantity === 0 ? (
                     <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
                       Esgotado
                     </span>
-                  ) : product.stockQuantity <= 5 ? (
+                  ) : product.stockQuantity <= (product.minStock || 5) ? (
                     <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
                       Últimas unidades
                     </span>

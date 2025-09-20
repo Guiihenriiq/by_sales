@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -47,7 +48,7 @@ const Categories: React.FC = () => {
       if (cachedCategories) {
         categoriesData = JSON.parse(cachedCategories);
       } else {
-        const response = await fetch('http://localhost:3334/api/categories');
+        const response = await fetch(`${`${API_BASE_URL}/categories`}`);
         if (!response.ok) throw new Error('Erro ao carregar categorias');
         categoriesData = await response.json();
         sessionStorage.setItem('categories', JSON.stringify(categoriesData));

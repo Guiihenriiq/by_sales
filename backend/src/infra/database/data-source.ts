@@ -9,6 +9,11 @@ import { OrderItem } from '@/domain/entities/order-item.entity';
 import { Cart } from '@/domain/entities/cart.entity';
 import { Sale } from '@/domain/entities/sale.entity';
 import { Installment } from '@/domain/entities/installment.entity';
+import { Offer } from '@/domain/entities/offer.entity';
+import { OfferProduct } from '@/domain/entities/offer-product.entity';
+import { Coupon } from '@/domain/entities/coupon.entity';
+import { UserCoupon } from '@/domain/entities/user-coupon.entity';
+import { Wishlist } from '@/domain/entities/wishlist.entity';
 
 const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
@@ -19,7 +24,7 @@ const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_DATABASE,
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: [Product, User, Category, Order, OrderItem, Cart, Sale, Installment],
+  entities: [Product, User, Category, Order, OrderItem, Cart, Sale, Installment, Offer, OfferProduct, Coupon, UserCoupon, Wishlist],
   migrations: [__dirname + '/typeorm/migrations/*.{js,ts}'],
 };
 

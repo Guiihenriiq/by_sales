@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { DashboardController } from './dashboardController';
+import { ProductTypeOrmRepository } from '@/infra/database/typeorm/repositories/ProductTypeOrmRepository';
 
 interface OrderItem {
   productId: string;
@@ -159,13 +160,37 @@ export class OrderController {
         return res.status(404).json({ error: 'Order not found' });
       }
 
-      orders[orderIndex].status = status;
-      orders[orderIndex].updatedAt = new Date().toISOString();
+      const order = orders[orderIndex];
+      const previousStatus = order.status;
+      
+      order.status = status;
+      order.updatedAt = new Date().toISOString();
+      
+      // Se o pedido foi aprovado (confirmed), atualizar estoque
+      if (status === 'confirmed' && previousStatus !== 'confirmed') {
+        const productRepository = new ProductTypeOrmRepository();
+        
+        for (const item of order.items) {
+          try {
+            const product = await productRepository.findById(item.productId);
+            if (product && product.stockQuantity >= item.quantity) {
+              const newStock = product.stockQuantity - item.quantity;
+              await productRepository.update(item.productId, { 
+                stockQuantity: newStock,
+                lastInventoryDate: new Date()
+              });
+              console.log(`Stock updated for product ${item.productId}: ${product.stockQuantity} -> ${newStock}`);
+            }
+          } catch (error) {
+            console.error(`Error updating stock for product ${item.productId}:`, error);
+          }
+        }
+      }
       
       // Sincronizar dados com dashboard
       DashboardController.syncOrders(orders);
       
-      return res.json(orders[orderIndex]);
+      return res.json(order);
     } catch (error) {
       return res.status(400).json({ error: (error as Error).message });
     }

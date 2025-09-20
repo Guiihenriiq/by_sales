@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
@@ -5,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import WishlistButton from '../components/WishlistButton';
 
 interface Product {
   id: string;
@@ -51,7 +53,7 @@ const ProductDetail: React.FC = () => {
 
   const fetchProduct = async (productId: string) => {
     try {
-      const response = await fetch(`http://localhost:3334/api/products/${productId}`);
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`);
       if (!response.ok) {
         if (response.status === 404) {
           toast.error('Produto não encontrado');
@@ -285,6 +287,11 @@ const ProductDetail: React.FC = () => {
               )}
 
               {/* Action Buttons */}
+              <div className="flex items-center space-x-4 mb-4">
+                <WishlistButton productId={product.id} size="lg" className="shadow-lg" />
+                <span className="text-sm text-gray-600">Adicionar à lista de desejos</span>
+              </div>
+              
               <div className="flex space-x-4">
                 <button
                   onClick={handleAddToCart}

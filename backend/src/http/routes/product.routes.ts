@@ -13,5 +13,8 @@ productRoutes.get('/category/:categoryId', productController.findByCategory);
 
 // Rotas protegidas com rate limit
 productRoutes.post('/', authRateLimiter, authMiddleware, adminMiddleware, productController.create);
+productRoutes.put('/:id', authRateLimiter, authMiddleware, adminMiddleware, productController.update);
+productRoutes.delete('/:id', authRateLimiter, authMiddleware, adminMiddleware, productController.delete);
+productRoutes.patch('/:id/stock', authRateLimiter, authMiddleware, adminMiddleware, productController.updateStock);
 
 export { productRoutes };

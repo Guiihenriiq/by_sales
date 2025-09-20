@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -20,7 +21,7 @@ const CategoryForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3334/api/categories', {
+      const response = await fetch(`${`${API_BASE_URL}/categories`}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -49,4 +49,31 @@ export class CategoryController {
       return res.status(400).json({ error: (error as Error).message });
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      
+      const categoryRepository = new CategoryTypeOrmRepository();
+      const category = await categoryRepository.update(id, updateData);
+      
+      return res.json(category);
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      
+      const categoryRepository = new CategoryTypeOrmRepository();
+      await categoryRepository.delete(id);
+      
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message });
+    }
+  }
 }

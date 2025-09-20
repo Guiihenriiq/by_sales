@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
@@ -56,7 +57,7 @@ const OrderDetail: React.FC = () => {
 
   const fetchOrder = async (orderId: string) => {
     try {
-      const response = await fetch(`http://localhost:3334/api/orders/${orderId}`, {
+      const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         headers: {
           'Authorization': `Bearer ${user?.token}`
         }

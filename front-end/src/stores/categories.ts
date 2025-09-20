@@ -44,5 +44,34 @@ export const useCategoryStore = defineStore('categories', {
         };
       }
     },
+
+    async updateCategory(id: string, categoryData: any) {
+      try {
+        const response = await api.put(`/categories/${id}`, categoryData);
+        const index = this.categories.findIndex(c => c.id === id);
+        if (index !== -1) {
+          this.categories[index] = response.data;
+        }
+        return { success: true };
+      } catch (error: any) {
+        return { 
+          success: false, 
+          message: error.response?.data?.error || 'Failed to update category' 
+        };
+      }
+    },
+
+    async deleteCategory(id: string) {
+      try {
+        await api.delete(`/categories/${id}`);
+        this.categories = this.categories.filter(c => c.id !== id);
+        return { success: true };
+      } catch (error: any) {
+        return { 
+          success: false, 
+          message: error.response?.data?.error || 'Failed to delete category' 
+        };
+      }
+    },
   },
 });

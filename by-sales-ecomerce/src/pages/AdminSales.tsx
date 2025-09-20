@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
@@ -54,7 +55,7 @@ const AdminSales: React.FC = () => {
 
   const fetchAllOrders = async () => {
     try {
-      const response = await fetch('http://localhost:3334/api/admin/orders', {
+      const response = await fetch(`${API_BASE_URL}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${user?.token}`
         }
@@ -98,22 +99,42 @@ const AdminSales: React.FC = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const response = await fetch(`http://localhost:3334/api/admin/orders/${orderId}/status`, {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) {
+        toast.error('Pedido não encontrado');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user?.token}`
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ 
+          status: newStatus,
+          items: order.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity
+          }))
+        })
       });
 
       if (response.ok) {
-        setOrders(orders.map(order => 
-          order.id === orderId 
-            ? { ...order, status: newStatus as any, updatedAt: new Date().toISOString() }
-            : order
+        setOrders(orders.map(o => 
+          o.id === orderId 
+            ? { ...o, status: newStatus as any, updatedAt: new Date().toISOString() }
+            : o
         ));
-        toast.success(`Pedido ${newStatus === 'confirmed' ? 'aprovado' : 'recusado'} com sucesso!`);
+        
+        let message = 'Status atualizado com sucesso!';
+        if (newStatus === 'confirmed') {
+          message = 'Pedido aprovado e estoque atualizado!';
+        } else if (newStatus === 'cancelled') {
+          message = 'Pedido cancelado!';
+        }
+        
+        toast.success(message);
       } else {
         throw new Error('Erro ao atualizar status');
       }

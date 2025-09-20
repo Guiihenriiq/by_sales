@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +32,7 @@ const CheckoutPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3334/api/sales', {
+      const response = await fetch(`${`${API_BASE_URL}/sales`}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

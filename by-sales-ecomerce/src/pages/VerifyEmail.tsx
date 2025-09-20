@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -19,7 +20,7 @@ const VerifyEmail: React.FC = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3334/api/auth/verify-email?email=${email}&code=${code}`);
+        const response = await axios.get(`${API_BASE_URL}/auth/verify-email?email=${email}&code=${code}`);
         setStatus('success');
         setMessage(response.data.message);
       } catch (error: any) {
