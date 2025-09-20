@@ -38,8 +38,19 @@ export class ProductController {
 
   async findAll(req: Request, res: Response) {
     try {
+      const { featured, limit } = req.query;
       const productRepository = new ProductTypeOrmRepository();
-      const products = await productRepository.findAll();
+      
+      let products = await productRepository.findAll();
+      
+      if (featured === 'true') {
+        products = products.filter(product => product.isActive && product.stockQuantity > 0)
+                          .sort((a, b) => (b.stockQuantity || 0) - (a.stockQuantity || 0));
+      }
+      
+      if (limit) {
+        products = products.slice(0, parseInt(limit as string));
+      }
       
       return res.json(products);
     } catch (error) {
