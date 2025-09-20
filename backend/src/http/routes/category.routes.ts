@@ -12,5 +12,7 @@ categoryRoutes.get('/:id', categoryController.findById);
 
 // Rotas protegidas com rate limit
 categoryRoutes.post('/', authRateLimiter, authMiddleware, adminMiddleware, categoryController.create);
+categoryRoutes.put('/:id', authRateLimiter, authMiddleware, adminMiddleware, categoryController.update);
+categoryRoutes.delete('/:id', authRateLimiter, authMiddleware, adminMiddleware, categoryController.delete);
 
 export { categoryRoutes };

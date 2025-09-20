@@ -10,6 +10,14 @@ interface Product {
   stockQuantity: number;
   images: string[];
   isActive: boolean;
+  minStock: number;
+  maxStock: number;
+  costPrice: number;
+  supplier?: string;
+  barcode?: string;
+  location?: string;
+  lastInventoryDate?: string;
+  inventoryNotes?: string;
   category?: {
     id: string;
     name: string;
@@ -78,6 +86,22 @@ export const useProductStore = defineStore('products', {
         return { 
           success: false, 
           message: error.response?.data?.error || 'Failed to delete product' 
+        };
+      }
+    },
+
+    async updateStock(id: string, stockData: { stockQuantity: number; inventoryNotes?: string }) {
+      try {
+        const response = await api.patch(`/products/${id}/stock`, stockData);
+        const index = this.products.findIndex(p => p.id === id);
+        if (index !== -1) {
+          this.products[index] = response.data;
+        }
+        return { success: true };
+      } catch (error: any) {
+        return { 
+          success: false, 
+          message: error.response?.data?.error || 'Failed to update stock' 
         };
       }
     },

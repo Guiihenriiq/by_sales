@@ -77,6 +77,15 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable :to="'/ofertas'" exact>
+          <q-item-section avatar>
+            <q-icon name="local_offer" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Ofertas & Cupons</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item clickable :to="'/relatorios'" exact>
           <q-item-section avatar>
             <q-icon name="analytics" />

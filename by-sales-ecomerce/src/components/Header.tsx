@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCartIcon, UserIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, UserIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext';
 import { gsap } from 'gsap';
 
 const Header: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const { getTotalItems } = useCart();
+  const { wishlistItems } = useWishlist();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,6 +95,24 @@ const Header: React.FC = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
+            {/* Wishlist */}
+            {isAuthenticated && (
+              <Link to="/wishlist" className="relative group">
+                <div className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300 group-hover:scale-110">
+                  {wishlistItems.size > 0 ? (
+                    <HeartSolidIcon className="h-6 w-6 text-red-500" />
+                  ) : (
+                    <HeartIcon className="h-6 w-6 text-gray-700 group-hover:text-red-500" />
+                  )}
+                  {wishlistItems.size > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {wishlistItems.size}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            )}
+
             {/* Cart */}
             <Link to="/cart" className="relative group">
               <div className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300 group-hover:scale-110">
@@ -119,6 +140,9 @@ const Header: React.FC = () => {
                   </Link>
                   <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Meus Pedidos
+                  </Link>
+                  <Link to="/wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Lista de Desejos
                   </Link>
                   {user?.role === 'admin' && (
                     <Link to="/admin/sales" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

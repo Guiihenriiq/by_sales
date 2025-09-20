@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import WishlistButton from '../components/WishlistButton';
 
 interface Product {
   id: string;
@@ -285,6 +286,11 @@ const ProductDetail: React.FC = () => {
               )}
 
               {/* Action Buttons */}
+              <div className="flex items-center space-x-4 mb-4">
+                <WishlistButton productId={product.id} size="lg" className="shadow-lg" />
+                <span className="text-sm text-gray-600">Adicionar à lista de desejos</span>
+              </div>
+              
               <div className="flex space-x-4">
                 <button
                   onClick={handleAddToCart}

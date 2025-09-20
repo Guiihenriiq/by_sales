@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { WishlistProvider } from './contexts/WishlistContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -22,12 +23,16 @@ import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import AdminSales from './pages/AdminSales';
 import OrderSuccess from './pages/OrderSuccess';
+import Offers from './pages/Offers';
+import Wishlist from './pages/Wishlist';
+import AuthDebug from './components/AuthDebug';
 
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <CartProvider>
+          <WishlistProvider>
           <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <div className="min-h-screen bg-gray-50">
             <Header />
@@ -37,6 +42,8 @@ function App() {
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/categories" element={<Categories />} />
+                <Route path="/offers" element={<Offers />} />
+                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
@@ -92,6 +99,7 @@ function App() {
               </Routes>
             </main>
             <Footer />
+            <AuthDebug />
           </div>
           <Toaster
             position="top-right"
@@ -114,6 +122,7 @@ function App() {
             }}
           />
           </Router>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </ErrorBoundary>

@@ -11,6 +11,14 @@ type CreateProductProps = {
   stockQuantity?: number;
   images?: string[];
   isActive?: boolean;
+  minStock?: number;
+  maxStock?: number;
+  costPrice?: number;
+  supplier?: string;
+  barcode?: string;
+  location?: string;
+  lastInventoryDate?: Date;
+  inventoryNotes?: string;
 };
 
 @Entity('products')
@@ -38,6 +46,30 @@ export class Product {
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive!: boolean;
+
+  @Column({ name: 'min_stock', type: 'integer', default: 0 })
+  minStock!: number;
+
+  @Column({ name: 'max_stock', type: 'integer', default: 1000 })
+  maxStock!: number;
+
+  @Column({ name: 'cost_price', type: 'decimal', precision: 10, scale: 2, default: 0 })
+  costPrice!: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  supplier?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  barcode?: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  location?: string;
+
+  @Column({ name: 'last_inventory_date', type: 'timestamp', nullable: true })
+  lastInventoryDate?: Date;
+
+  @Column({ name: 'inventory_notes', type: 'text', nullable: true })
+  inventoryNotes?: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
@@ -72,6 +104,14 @@ export class Product {
       stockQuantity: props.stockQuantity || 0,
       images: props.images || [],
       isActive: props.isActive !== undefined ? props.isActive : true,
+      minStock: props.minStock || 0,
+      maxStock: props.maxStock || 1000,
+      costPrice: props.costPrice || 0,
+      supplier: props.supplier,
+      barcode: props.barcode,
+      location: props.location,
+      lastInventoryDate: props.lastInventoryDate,
+      inventoryNotes: props.inventoryNotes,
     });
 
     return product;

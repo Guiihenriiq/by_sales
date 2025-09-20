@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
-import { UserIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { UserIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, PencilIcon, CheckIcon, XMarkIcon, TicketIcon } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 interface UserProfile {
@@ -16,11 +16,35 @@ interface UserProfile {
   createdAt: string;
 }
 
+interface UserCoupon {
+  id: string;
+  coupon: {
+    id: string;
+    code: string;
+    title: string;
+    description?: string;
+    discountType: 'percentage' | 'fixed_amount';
+    discountValue: number;
+    minPurchaseAmount: number;
+    maxDiscountAmount?: number;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+    usedCount: number;
+    status: string;
+  };
+  usedAt?: string;
+  createdAt: string;
+}
+
 const Profile: React.FC = () => {
   const { user, token } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userCoupons, setUserCoupons] = useState<UserCoupon[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingCoupons, setLoadingCoupons] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showCoupons, setShowCoupons] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -35,6 +59,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchUserCoupons();
     }
   }, [user]);
 
@@ -71,6 +96,56 @@ const Profile: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchUserCoupons = async () => {
+    if (!user?.id) return;
+    
+    setLoadingCoupons(true);
+    try {
+      const response = await fetch(`http://localhost:3334/api/coupons/user/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const couponsData = await response.json();
+        setUserCoupons(couponsData);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar cupons:', error);
+    } finally {
+      setLoadingCoupons(false);
+    }
+  };
+
+  const formatDiscount = (coupon: UserCoupon['coupon']) => {
+    if (coupon.discountType === 'percentage') {
+      return `${coupon.discountValue}% OFF`;
+    } else {
+      return `R$ ${coupon.discountValue.toFixed(2)} OFF`;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
+  const isCouponExpired = (endDate: string) => {
+    return new Date(endDate) < new Date();
+  };
+
+  const isCouponActive = (coupon: UserCoupon) => {
+    const now = new Date();
+    const startDate = new Date(coupon.coupon.startDate);
+    const endDate = new Date(coupon.coupon.endDate);
+    
+    return !coupon.usedAt && 
+           coupon.coupon.status === 'active' && 
+           startDate <= now && 
+           endDate >= now && 
+           coupon.coupon.usedCount < coupon.coupon.usageLimit;
   };
 
   const animateContent = () => {
@@ -350,8 +425,12 @@ const Profile: React.FC = () => {
                 <button className="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
                   Lista de Desejos
                 </button>
-                <button className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
-                  Cupons de Desconto
+                <button 
+                  onClick={() => setShowCoupons(true)}
+                  className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <TicketIcon className="w-4 h-4" />
+                  <span>Meus Cupons ({userCoupons.length})</span>
                 </button>
                 {!profile.emailVerified && (
                   <button className="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
@@ -375,6 +454,144 @@ const Profile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Modal de Cupons */}
+        {showCoupons && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+              {/* Header do Modal */}
+              <div className="bg-gradient-to-r from-green-500 to-teal-600 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <TicketIcon className="w-6 h-6 text-white" />
+                  <h2 className="text-xl font-bold text-white">Meus Cupons de Desconto</h2>
+                </div>
+                <button
+                  onClick={() => setShowCoupons(false)}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Conteúdo do Modal */}
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                {loadingCoupons ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+                    <span className="ml-2 text-gray-600">Carregando cupons...</span>
+                  </div>
+                ) : userCoupons.length === 0 ? (
+                  <div className="text-center py-12">
+                    <TicketIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                      Nenhum cupom disponível
+                    </h3>
+                    <p className="text-gray-500">
+                      Você ainda não possui cupons de desconto. Fique de olho nas nossas promoções!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {userCoupons.map((userCoupon) => (
+                      <div
+                        key={userCoupon.id}
+                        className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
+                          isCouponActive(userCoupon)
+                            ? 'border-green-200 bg-gradient-to-r from-green-50 to-teal-50 hover:shadow-lg'
+                            : userCoupon.usedAt
+                            ? 'border-gray-200 bg-gray-50 opacity-75'
+                            : 'border-red-200 bg-red-50 opacity-75'
+                        }`}
+                      >
+                        {/* Status Badge */}
+                        <div className="absolute top-2 right-2">
+                          {userCoupon.usedAt ? (
+                            <span className="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              USADO
+                            </span>
+                          ) : isCouponExpired(userCoupon.coupon.endDate) ? (
+                            <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              EXPIRADO
+                            </span>
+                          ) : isCouponActive(userCoupon) ? (
+                            <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              ATIVO
+                            </span>
+                          ) : (
+                            <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              INATIVO
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="p-4">
+                          {/* Código do Cupom */}
+                          <div className="mb-3">
+                            <div className="bg-white border-2 border-dashed border-green-300 rounded-lg p-3 text-center">
+                              <div className="text-2xl font-bold text-green-600 font-mono">
+                                {userCoupon.coupon.code}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                Clique para copiar
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Informações do Cupom */}
+                          <div className="space-y-2">
+                            <h3 className="font-bold text-gray-800">
+                              {userCoupon.coupon.title}
+                            </h3>
+                            
+                            {userCoupon.coupon.description && (
+                              <p className="text-sm text-gray-600">
+                                {userCoupon.coupon.description}
+                              </p>
+                            )}
+
+                            <div className="flex items-center justify-between">
+                              <div className="text-lg font-bold text-green-600">
+                                {formatDiscount(userCoupon.coupon)}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                Válido até {formatDate(userCoupon.coupon.endDate)}
+                              </div>
+                            </div>
+
+                            {userCoupon.coupon.minPurchaseAmount > 0 && (
+                              <div className="text-xs text-gray-600">
+                                💰 Compra mínima: R$ {userCoupon.coupon.minPurchaseAmount.toFixed(2)}
+                              </div>
+                            )}
+
+                            {userCoupon.usedAt && (
+                              <div className="text-xs text-gray-500">
+                                ✅ Usado em {formatDate(userCoupon.usedAt)}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Botão de Ação */}
+                          {isCouponActive(userCoupon) && (
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(userCoupon.coupon.code);
+                                toast.success('Código copiado!');
+                              }}
+                              className="w-full mt-3 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-semibold"
+                            >
+                              Copiar Código
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
