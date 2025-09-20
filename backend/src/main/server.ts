@@ -4,10 +4,12 @@ import 'express-async-errors';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { createServer } from 'http';
 import { AppDataSource } from '@/infra/database/data-source';
 import { routes } from './routes';
 import { sanitizeInput } from '@/http/middlewares/sanitizer';
 import { generalRateLimiter } from '@/http/middlewares/rateLimiter';
+import { LiveStreamingServer } from '@/infra/websocket/liveStreamingServer';
 
 const app = express();
 const port = process.env.PORT || 3334;
@@ -55,8 +57,13 @@ app.use(
 AppDataSource.initialize()
   .then(() => {
     console.log('Database connected successfully!');
-    app.listen(port, () => {
+    
+    const server = createServer(app);
+    new LiveStreamingServer(server);
+    
+    server.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
+      console.log(`WebSocket server is running on ws://localhost:${port}`);
     });
   })
   .catch((error) => console.log(error));

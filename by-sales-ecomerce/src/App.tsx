@@ -30,6 +30,8 @@ import Shipping from './pages/Shipping';
 import Returns from './pages/Returns';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Lives from './pages/Lives';
+import AdminLives from './pages/AdminLives';
 import HelpChat from './components/HelpChat';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -58,6 +60,7 @@ function App() {
                 <Route path="/returns" element={<Returns />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/lives" element={<Lives />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
@@ -108,6 +111,11 @@ function App() {
                 <Route path="/admin/sales" element={
                   <ProtectedRoute requireAdmin>
                     <AdminSales />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/lives" element={
+                  <ProtectedRoute requireAdmin>
+                    <AdminLives />
                   </ProtectedRoute>
                 } />
               </Routes>

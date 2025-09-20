@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCartIcon, UserIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { ShoppingCartIcon, UserIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon, HeartIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -91,6 +91,10 @@ const Header: React.FC = () => {
             <Link to="/offers" className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-300">
               Ofertas
             </Link>
+            <Link to="/lives" className="flex items-center space-x-1 text-gray-700 hover:text-red-600 font-medium transition-colors duration-300">
+              <VideoCameraIcon className="h-4 w-4" />
+              <span>Lives</span>
+            </Link>
           </nav>
 
           {/* User Actions */}
@@ -145,9 +149,14 @@ const Header: React.FC = () => {
                     Lista de Desejos
                   </Link>
                   {user?.role === 'admin' && (
-                    <Link to="/admin/sales" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      Painel de Vendas
-                    </Link>
+                    <>
+                      <Link to="/admin/sales" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Painel de Vendas
+                      </Link>
+                      <Link to="/admin/lives" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Gerenciar Lives
+                      </Link>
+                    </>
                   )}
                   <button
                     onClick={handleLogout}
@@ -209,6 +218,9 @@ const Header: React.FC = () => {
             </Link>
             <Link to="/offers" className="block text-gray-700 hover:text-purple-600 font-medium">
               Ofertas
+            </Link>
+            <Link to="/lives" className="block text-gray-700 hover:text-red-600 font-medium">
+              Lives
             </Link>
             {!isAuthenticated && (
               <>

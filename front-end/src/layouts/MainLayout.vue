@@ -86,6 +86,15 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable :to="'/lives'" exact>
+          <q-item-section avatar>
+            <q-icon name="videocam" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Lives</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item clickable :to="'/relatorios'" exact>
           <q-item-section avatar>
             <q-icon name="analytics" />
