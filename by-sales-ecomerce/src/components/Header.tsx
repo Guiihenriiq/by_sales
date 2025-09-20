@@ -51,9 +51,11 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
-              <ShoppingCartIcon className="h-8 w-8 text-white" />
-            </div>
+            <img 
+              src="/by sales roxa.png" 
+              alt="By Sales" 
+              className="h-12 w-auto group-hover:scale-110 transition-transform duration-300"
+            />
             <div>
               <h1 className="text-2xl font-bold text-gradient">By Sales</h1>
               <p className="text-xs text-gray-500">Sua loja online</p>

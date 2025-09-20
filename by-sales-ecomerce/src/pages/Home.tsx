@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import { StarIcon, ShoppingCartIcon, HeartIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useCart } from '../contexts/CartContext';
+import { API_BASE_URL } from '../utils/api';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -17,6 +18,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Home: React.FC = () => {
   const { addToCart } = useCart();
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
@@ -49,52 +52,41 @@ const Home: React.FC = () => {
     }
   ];
 
-  const featuredProducts = [
-    {
-      id: '1',
-      name: 'iPhone 15 Pro Max',
-      price: 8999.99,
-      originalPrice: 9999.99,
-      images: ['https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop'],
-      rating: 4.9,
-      reviews: 1234,
-      discount: 10,
-      isHot: true
-    },
-    {
-      id: '2',
-      name: 'MacBook Air M2',
-      price: 7499.99,
-      originalPrice: 8499.99,
-      images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop'],
-      rating: 4.8,
-      reviews: 856,
-      discount: 12,
-      isHot: true
-    },
-    {
-      id: '3',
-      name: 'AirPods Pro 2',
-      price: 1899.99,
-      originalPrice: 2199.99,
-      images: ['https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop'],
-      rating: 4.7,
-      reviews: 2341,
-      discount: 14,
-      isHot: false
-    },
-    {
-      id: '4',
-      name: 'Samsung Galaxy S24',
-      price: 6999.99,
-      originalPrice: 7999.99,
-      images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop'],
-      rating: 4.6,
-      reviews: 1876,
-      discount: 13,
-      isHot: false
+  const fetchFeaturedProducts = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products?featured=true&limit=4`);
+      if (response.ok) {
+        const data = await response.json();
+        setFeaturedProducts(data.products || data);
+      }
+    } catch (error) {
+      // Fallback para produtos mock se API falhar
+      setFeaturedProducts([
+        {
+          id: '1',
+          name: 'iPhone 15 Pro Max',
+          price: 8999.99,
+          originalPrice: 9999.99,
+          images: ['https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop'],
+          rating: 4.9,
+          reviews: 1234,
+          featured: true
+        },
+        {
+          id: '2',
+          name: 'MacBook Air M2',
+          price: 7499.99,
+          originalPrice: 8499.99,
+          images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop'],
+          rating: 4.8,
+          reviews: 856,
+          featured: true
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const categories = [
     { name: 'Eletrônicos', icon: '📱', count: 1234, color: 'from-blue-500 to-purple-600' },
@@ -106,8 +98,13 @@ const Home: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Animações de entrada
-    const tl = gsap.timeline();
+    fetchFeaturedProducts();
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      // Animações de entrada
+      const tl = gsap.timeline();
     
     tl.fromTo('.hero-content', 
       { opacity: 0, y: 50 },
@@ -151,10 +148,11 @@ const Home: React.FC = () => {
       }
     );
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
+      return () => {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      };
+    }
+  }, [loading]);
 
   const handleAddToCart = (product: any) => {
     addToCart(product);
@@ -286,28 +284,40 @@ const Home: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <div key={product.id} className="product-card card overflow-hidden group">
-                <div className="relative">
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  {product.isHot && (
-                    <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
-                      🔥 HOT
-                    </div>
-                  )}
-                  {product.discount > 0 && (
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                      -{product.discount}%
-                    </div>
-                  )}
-                  <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
-                    <HeartIcon className="w-6 h-6 text-red-500" />
-                  </button>
+            {loading ? (
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="card overflow-hidden animate-pulse">
+                  <div className="bg-gray-300 h-64 w-full"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-2/3 mb-4"></div>
+                    <div className="h-8 bg-gray-300 rounded"></div>
+                  </div>
                 </div>
+              ))
+            ) : (
+              featuredProducts.map((product) => (
+                <div key={product.id} className="product-card card overflow-hidden group">
+                  <div className="relative">
+                    <img
+                      src={product.images?.[0] || product.imageUrl || 'https://via.placeholder.com/400x400'}
+                      alt={product.name}
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    {product.featured && (
+                      <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+                        🔥 HOT
+                      </div>
+                    )}
+                    {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+                      <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        -{Math.round(((Number(product.originalPrice) - Number(product.price)) / Number(product.originalPrice)) * 100)}%
+                      </div>
+                    )}
+                    <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
+                      <HeartIcon className="w-6 h-6 text-red-500" />
+                    </button>
+                  </div>
                 
                 <div className="p-6">
                   <h3 className="font-bold text-lg mb-2 group-hover:text-purple-600 transition-colors">
@@ -320,24 +330,24 @@ const Home: React.FC = () => {
                         <StarIcon
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'
+                            i < Math.floor(product.rating || 4.5) ? 'text-yellow-400' : 'text-gray-300'
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-gray-500 ml-2">
-                      ({product.reviews})
+                      ({product.reviews || 0})
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <span className="text-2xl font-bold text-purple-600">
-                        R$ {product.price.toFixed(2)}
+                        R$ {Number(product.price || 0).toFixed(2)}
                       </span>
-                      {product.originalPrice > product.price && (
+                      {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
                         <span className="text-sm text-gray-500 line-through ml-2">
-                          R$ {product.originalPrice.toFixed(2)}
+                          R$ {Number(product.originalPrice).toFixed(2)}
                         </span>
                       )}
                     </div>
@@ -351,8 +361,9 @@ const Home: React.FC = () => {
                     <span>Adicionar ao Carrinho</span>
                   </button>
                 </div>
-              </div>
-            ))}
+                </div>
+              ))
+            )}
           </div>
           
           <div className="text-center mt-12">
