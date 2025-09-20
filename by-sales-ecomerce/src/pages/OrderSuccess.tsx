@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -36,7 +37,7 @@ const OrderSuccess: React.FC = () => {
   const fetchSale = async (id: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3334/api/sales/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/sales/${id}`, {
         headers: {
           'Authorization': `Bearer ${user?.token}`
         }

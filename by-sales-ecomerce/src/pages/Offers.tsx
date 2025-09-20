@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -55,7 +56,7 @@ const Offers: React.FC = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await fetch('http://localhost:3334/api/offers/active');
+      const response = await fetch(`${API_BASE_URL}/offers/active`);
       if (!response.ok) throw new Error('Erro ao carregar ofertas');
       
       const offersData = await response.json();

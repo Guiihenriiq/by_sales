@@ -27,6 +27,10 @@ export class Wishlist {
   private constructor() { }
 
   static create(userId: string, productId: string): Wishlist {
+    if (!userId || !productId) {
+      throw new Error('UserId and ProductId are required');
+    }
+    
     const wishlist = new Wishlist();
     wishlist.userId = userId;
     wishlist.productId = productId;

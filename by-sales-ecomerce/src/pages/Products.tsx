@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -112,11 +113,11 @@ const Products: React.FC = () => {
       if (cachedCategories) {
         categoriesPromise = Promise.resolve({ json: () => JSON.parse(cachedCategories) });
       } else {
-        categoriesPromise = fetch('http://localhost:3334/api/categories');
+        categoriesPromise = fetch(`${API_BASE_URL}/categories`);
       }
       
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch('http://localhost:3334/api/products'),
+        fetch(`${API_BASE_URL}/products`),
         categoriesPromise
       ]);
       

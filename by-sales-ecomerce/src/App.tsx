@@ -25,7 +25,14 @@ import AdminSales from './pages/AdminSales';
 import OrderSuccess from './pages/OrderSuccess';
 import Offers from './pages/Offers';
 import Wishlist from './pages/Wishlist';
-import AuthDebug from './components/AuthDebug';
+import Support from './pages/Support';
+import Shipping from './pages/Shipping';
+import Returns from './pages/Returns';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import HelpChat from './components/HelpChat';
+import ScrollToTop from './components/ScrollToTop';
+
 
 function App() {
   return (
@@ -34,6 +41,7 @@ function App() {
         <CartProvider>
           <WishlistProvider>
           <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
           <div className="min-h-screen bg-gray-50">
             <Header />
             <main className="min-h-screen">
@@ -44,6 +52,12 @@ function App() {
                 <Route path="/categories" element={<Categories />} />
                 <Route path="/offers" element={<Offers />} />
                 <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/help" element={<Support />} />
+                <Route path="/shipping" element={<Shipping />} />
+                <Route path="/returns" element={<Returns />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
@@ -99,7 +113,8 @@ function App() {
               </Routes>
             </main>
             <Footer />
-            <AuthDebug />
+            <HelpChat />
+
           </div>
           <Toaster
             position="top-right"

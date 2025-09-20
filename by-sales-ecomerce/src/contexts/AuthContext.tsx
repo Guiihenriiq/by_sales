@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -31,7 +32,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const api = axios.create({
-  baseURL: 'http://localhost:3334/api',
+  baseURL: API_BASE_URL,
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

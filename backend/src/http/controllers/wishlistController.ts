@@ -5,13 +5,22 @@ import { WishlistTypeOrmRepository } from '@/infra/database/typeorm/repositories
 export class WishlistController {
   async addToWishlist(req: Request, res: Response) {
     try {
+      console.log('Wishlist add request:', { body: req.body, user: req.user });
       const { productId } = req.body;
       const userId = req.user?.userId;
 
       if (!userId) {
+        console.log('No userId found');
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
+      if (!productId) {
+        console.log('No productId provided');
+        return res.status(400).json({ error: 'Product ID is required' });
+      }
+
+
+      
       const wishlistRepository = new WishlistTypeOrmRepository();
       
       // Check if already exists
@@ -25,7 +34,8 @@ export class WishlistController {
       
       return res.status(201).json(savedWishlist);
     } catch (error) {
-      return res.status(400).json({ error: (error as Error).message });
+      console.error('Wishlist add error:', error);
+      return res.status(500).json({ error: (error as Error).message });
     }
   }
 

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useCart } from '../contexts/CartContext';
@@ -42,7 +43,7 @@ const Checkout: React.FC = () => {
         notes: `Pedido e-commerce - ${items.length} item(s)`
       };
 
-      const response = await fetch('http://localhost:3334/api/sales', {
+      const response = await fetch(`${`${API_BASE_URL}/sales`}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

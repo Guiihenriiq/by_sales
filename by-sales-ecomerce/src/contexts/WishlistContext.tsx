@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from './AuthContext';
+import { API_BASE_URL } from '../utils/api';
 
 interface WishlistContextType {
   wishlistItems: Set<string>;
@@ -30,13 +31,14 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   }, [isAuthenticated, user]);
 
   const loadWishlist = async () => {
-    if (!token) return;
+    if (!token || !isAuthenticated) {
+      return;
+    }
     
     try {
-      const response = await fetch('http://localhost:3334/api/wishlist', {
+      const response = await fetch(`${API_BASE_URL}/wishlist`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cache-Control': 'no-cache'
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -44,6 +46,8 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
         const data = await response.json();
         const productIds = new Set(data.map((item: any) => item.productId));
         setWishlistItems(productIds);
+      } else if (response.status === 401) {
+        setWishlistItems(new Set());
       }
     } catch (error) {
       console.error('Error loading wishlist:', error);
@@ -61,29 +65,41 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     }
 
     try {
-      const response = await fetch('http://localhost:3334/api/wishlist', {
+      const response = await fetch(`${API_BASE_URL}/wishlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Cache-Control': 'no-cache'
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ productId })
       });
-
+      
       if (response.ok) {
         setWishlistItems(prev => new Set(prev).add(productId));
         toast.success('Produto adicionado à lista de desejos!');
       } else {
-        const error = await response.json();
-        if (error.error === 'Product already in wishlist') {
+        const errorText = await response.text();
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        
+        if (errorData.error === 'Product already in wishlist') {
           toast.error('Produto já está na lista de desejos');
+        } else if (response.status === 401) {
+          toast.error('Sessão expirada. Faça login novamente.');
+        } else if (response.status === 404) {
+          toast.error('Produto não encontrado');
         } else {
-          throw new Error(error.error);
+          toast.error(`Erro: ${errorData.error || 'Erro desconhecido'}`);
         }
       }
     } catch (error) {
-      toast.error('Erro ao adicionar à lista de desejos');
+      console.error('Network error:', error);
+      toast.error('Erro de conexão. Verifique sua internet.');
     }
   };
 
@@ -91,11 +107,10 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     if (!isAuthenticated || !token) return;
 
     try {
-      const response = await fetch(`http://localhost:3334/api/wishlist/${productId}`, {
+      const response = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cache-Control': 'no-cache'
+          'Authorization': `Bearer ${token}`
         }
       });
 

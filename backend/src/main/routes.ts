@@ -24,6 +24,7 @@ routes.use('/cart', cartRoutes);
 routes.use('/orders', orderRoutes);
 routes.use('/admin', adminOrderRoutes);
 routes.use('/dashboard', dashboardRoutes);
+routes.use('/admin/dashboard', dashboardRoutes);
 routes.use('/admin', adminRoutes);
 routes.use('/sales', saleRoutes);
 routes.use('/admin', adminSaleRoutes);

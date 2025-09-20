@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
@@ -103,7 +104,7 @@ const Profile: React.FC = () => {
     
     setLoadingCoupons(true);
     try {
-      const response = await fetch(`http://localhost:3334/api/coupons/user/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/coupons/user/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

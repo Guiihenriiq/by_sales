@@ -11,6 +11,8 @@ wishlistRoutes.get('/test', authMiddleware, (req, res) => {
   res.json({ message: 'Auth working', user: req.user });
 });
 
+
+
 // All wishlist routes require authentication
 wishlistRoutes.get('/', authMiddleware, wishlistController.getUserWishlist);
 wishlistRoutes.post('/', authMiddleware, wishlistController.addToWishlist);

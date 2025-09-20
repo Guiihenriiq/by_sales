@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from './AuthContext';
@@ -58,7 +59,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3334/api/cart', {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -82,7 +83,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Usuário logado - usar API
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:3334/api/cart', {
+        const response = await fetch(`${API_BASE_URL}/cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Usuário logado - usar API
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:3334/api/cart/${cartItemId}`, {
+        const response = await fetch(`${API_BASE_URL}/cart/${cartItemId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -192,7 +193,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3334/api/cart/${cartItemId}`, {
+      const response = await fetch(`${API_BASE_URL}/cart/${cartItemId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -221,7 +222,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const deletePromises = items.map(item => 
-        fetch(`http://localhost:3334/api/cart/${item.id}`, {
+        fetch(`${API_BASE_URL}/cart/${item.id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,6 +8,7 @@ import { HeartIcon, ShoppingCartIcon, TrashIcon } from '@heroicons/react/24/outl
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -34,6 +36,7 @@ interface WishlistItem {
 const Wishlist: React.FC = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const { loadWishlist } = useWishlist();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -59,7 +62,7 @@ const Wishlist: React.FC = () => {
 
   const fetchWishlist = async () => {
     try {
-      const response = await fetch('http://localhost:3334/api/wishlist', {
+      const response = await fetch(`${API_BASE_URL}/wishlist`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -121,7 +124,7 @@ const Wishlist: React.FC = () => {
         ease: "power2.in",
         onComplete: async () => {
           try {
-            const response = await fetch(`http://localhost:3334/api/wishlist/${productId}`, {
+            const response = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
               method: 'DELETE',
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -130,6 +133,7 @@ const Wishlist: React.FC = () => {
             
             if (response.ok) {
               setWishlistItems(prev => prev.filter(item => item.productId !== productId));
+              loadWishlist(); // Update global wishlist state
               toast.success('Produto removido da lista de desejos');
             } else {
               throw new Error('Erro ao remover produto');
@@ -168,7 +172,8 @@ const Wishlist: React.FC = () => {
       images: product.images
     });
     
-    toast.success('Produto adicionado ao carrinho!');
+    // Remove from wishlist after adding to cart
+    await removeFromWishlist(product.id);
   };
 
   const moveAllToCart = async () => {
@@ -191,9 +196,23 @@ const Wishlist: React.FC = () => {
         });
       }
       
-      toast.success(`${availableItems.length} produtos adicionados ao carrinho!`);
+      // Remove all moved items from wishlist
+      const removePromises = availableItems.map(item => 
+        fetch(`${API_BASE_URL}/wishlist/${item.productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      );
+      
+      await Promise.all(removePromises);
+      setWishlistItems(prev => prev.filter(item => 
+        !availableItems.some(available => available.productId === item.productId)
+      ));
+      loadWishlist(); // Update global wishlist state
+      
+      toast.success(`${availableItems.length} produtos movidos para o carrinho!`);
     } catch (error) {
-      toast.error('Erro ao adicionar produtos ao carrinho');
+      toast.error('Erro ao mover produtos para o carrinho');
     }
   };
 
@@ -325,7 +344,10 @@ const Wishlist: React.FC = () => {
                   
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-2xl font-bold text-green-600">
-                      R$ {item.product.price.toFixed(2)}
+                      R$ {(() => {
+                        const price = typeof item.product.price === 'string' ? parseFloat(item.product.price) : item.product.price;
+                        return isNaN(price) ? '0.00' : price.toFixed(2);
+                      })()}
                     </span>
                     <span className="text-sm text-gray-500">
                       Adicionado em {new Date(item.createdAt).toLocaleDateString('pt-BR')}

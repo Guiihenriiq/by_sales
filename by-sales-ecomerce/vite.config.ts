@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     host: true
   },
-  build: {
-    target: 'es2015'
+  define: {
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: 'undefined'
   }
 })

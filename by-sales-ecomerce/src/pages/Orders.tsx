@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
@@ -65,7 +66,7 @@ const Orders: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3334/api/sales', {
+      const response = await fetch(`${API_BASE_URL}/sales`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

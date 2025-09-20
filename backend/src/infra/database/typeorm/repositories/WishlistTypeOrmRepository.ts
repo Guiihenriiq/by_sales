@@ -7,11 +7,19 @@ export class WishlistTypeOrmRepository implements IWishlistRepository {
   private repository: Repository<Wishlist>;
 
   constructor() {
+    if (!AppDataSource.isInitialized) {
+      throw new Error('DataSource not initialized');
+    }
     this.repository = AppDataSource.getRepository(Wishlist);
   }
 
   async create(wishlist: Wishlist): Promise<Wishlist> {
-    return await this.repository.save(wishlist);
+    try {
+      const result = await this.repository.save(wishlist);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findByUserId(userId: string): Promise<Wishlist[]> {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { SaleTypeOrmRepository } from '@/infra/database/typeorm/repositories/SaleTypeOrmRepository';
+import { ProductTypeOrmRepository } from '@/infra/database/typeorm/repositories/ProductTypeOrmRepository';
 import { Sale } from '@/domain/entities/sale.entity';
 import { Installment } from '@/domain/entities/installment.entity';
 import { z } from 'zod';
@@ -132,7 +133,7 @@ export class SaleController {
   async updateStatus(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status, items } = req.body;
       const userRole = req.user?.role;
       
       if (userRole !== 'admin') {
@@ -146,7 +147,30 @@ export class SaleController {
         return res.status(404).json({ error: 'Venda não encontrada' });
       }
 
+      const previousStatus = sale.status;
       sale.status = status;
+      
+      // Se a venda foi confirmada e há itens, atualizar estoque
+      if (status === 'confirmed' && previousStatus !== 'confirmed' && items && items.length > 0) {
+        const productRepository = new ProductTypeOrmRepository();
+        
+        for (const item of items) {
+          try {
+            const product = await productRepository.findById(item.productId);
+            if (product && product.stockQuantity >= item.quantity) {
+              const newStock = product.stockQuantity - item.quantity;
+              await productRepository.update(item.productId, { 
+                stockQuantity: newStock,
+                lastInventoryDate: new Date()
+              });
+              console.log(`Stock updated for product ${item.productId}: ${product.stockQuantity} -> ${newStock}`);
+            }
+          } catch (error) {
+            console.error(`Error updating stock for product ${item.productId}:`, error);
+          }
+        }
+      }
+      
       await saleRepository.update(sale);
 
       return res.json({

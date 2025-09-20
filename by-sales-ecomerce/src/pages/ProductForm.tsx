@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -25,7 +26,7 @@ const ProductForm: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3334/api/products', {
+      const response = await fetch(`${`${API_BASE_URL}/products`}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

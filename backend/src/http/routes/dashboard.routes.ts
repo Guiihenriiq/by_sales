@@ -8,6 +8,5 @@ const dashboardController = new DashboardController();
 dashboardRoutes.use(authMiddleware, adminMiddleware);
 
 dashboardRoutes.get('/stats', dashboardController.getStats);
-dashboardRoutes.get('/sales', dashboardController.getSalesData);
 
 export { dashboardRoutes };

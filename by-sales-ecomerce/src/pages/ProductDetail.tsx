@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/api";
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
@@ -52,7 +53,7 @@ const ProductDetail: React.FC = () => {
 
   const fetchProduct = async (productId: string) => {
     try {
-      const response = await fetch(`http://localhost:3334/api/products/${productId}`);
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`);
       if (!response.ok) {
         if (response.status === 404) {
           toast.error('Produto não encontrado');
